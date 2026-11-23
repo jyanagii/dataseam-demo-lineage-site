@@ -7,7 +7,7 @@ sql_dialect: snowflake
 
 warehouse:
   platform: snowflake
-  lowercase_ids: false
+  lowercase_ids: true
   job_history:
     enabled: true
     days: 30
