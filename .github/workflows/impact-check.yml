@@ -52,7 +52,7 @@ jobs:
         if [ -n "${DATASEAM_INSTALL_TOKEN:-}" ]; then
           git config --global url."https://x-access-token:${DATASEAM_INSTALL_TOKEN}@github.com/jyanagii/dataseam".insteadOf "https://github.com/jyanagii/dataseam"
         fi
-        python -m pip install 'dataseam @ git+https://github.com/jyanagii/dataseam.git@cf08a36de0bc2871160e13c1b0dad06bb4294d15'
+        python -m pip install 'dataseam @ git+https://github.com/jyanagii/dataseam.git@3728bd0502c81103e86d0655ed521923a3024b08'
     - name: Check out the trusted source repositories
       env:
         READ_REPOS_TOKEN: ${{ secrets.READ_REPOS_TOKEN }}
