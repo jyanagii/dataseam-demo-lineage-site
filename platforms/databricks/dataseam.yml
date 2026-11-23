@@ -1,0 +1,34 @@
+site:
+  title: Acme Books (Databricks Demo)
+  output: ./site
+  agent_context: true
+
+sql_dialect: databricks
+
+warehouse:
+  platform: databricks
+  lowercase_ids: true
+  job_history:
+    enabled: true
+    days: 30
+    export_path: ./history.jsonl
+
+column_lineage:
+  enabled: true
+  cache_dir: ./.dataseam-cache
+
+dbt_projects:
+  - name: acme_dbx
+    path: ./dbt
+    artifacts:
+      source: path
+      uri: ./dbt/target
+
+airflow:
+  - name: dbx_pipelines
+    path: ./pipelines
+    dag_globs: ["dags/**/*.py"]
+    default_database: acme_prod
+    extractors:
+      - type: databricks_operators
+      - type: sql_operators

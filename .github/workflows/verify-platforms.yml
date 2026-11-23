@@ -1,0 +1,53 @@
+name: Verify Snowflake and Databricks demos
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: snowflake
+            adapter: dbt-snowflake~=1.10.0
+            database: ACME_PROD
+            schema: ANALYTICS
+            what_if: remove:ACME_PROD.ANALYTICS.ORDERS.AMOUNT
+          - platform: databricks
+            adapter: dbt-databricks~=1.10.0
+            database: acme_prod
+            schema: analytics
+            what_if: remove:acme_prod.analytics.orders.amount
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install DataSeam and dbt adapter
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "dataseam @ git+https://github.com/jyanagii/dataseam@8b58901d408be32d5d55fc55914a119e163c2afe"
+          python -m pip install "dbt-core~=1.10.0" "${{ matrix.adapter }}"
+      - name: Offline dbt compile
+        run: |
+          dataseam impact-compile "platforms/${{ matrix.platform }}/dbt" \
+            -o "platforms/${{ matrix.platform }}/dbt/target" \
+            --platform "${{ matrix.platform }}" \
+            --profile-override "database=${{ matrix.database }}" \
+            --profile-override "schema=${{ matrix.schema }}"
+      - name: Doctor and build static site
+        run: |
+          dataseam doctor -c "platforms/${{ matrix.platform }}/dataseam.yml" --strict
+          dataseam build -c "platforms/${{ matrix.platform }}/dataseam.yml"
+      - name: Check what-if impact
+        run: |
+          dataseam snapshot -c "platforms/${{ matrix.platform }}/dataseam.yml" -o snapshot.json.gz
+          dataseam impact --snapshot snapshot.json.gz --what-if "${{ matrix.what_if }}"
+      - name: Upload built site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "site-${{ matrix.platform }}"
+          path: "platforms/${{ matrix.platform }}/site"

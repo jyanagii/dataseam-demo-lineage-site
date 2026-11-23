@@ -1,0 +1,2 @@
+SELECT ORDER_ID, ORDER_DATE, AMOUNT
+FROM {{ source('raw', 'ORDERS') }}

@@ -1,0 +1,7 @@
+name: acme_sf
+version: "1.0.0"
+profile: acme_sf
+model-paths: ["models"]
+models:
+  acme_sf:
+    +materialized: table

@@ -1,0 +1,7 @@
+name: acme_dbx
+version: "1.0.0"
+profile: acme_dbx
+model-paths: ["models"]
+models:
+  acme_dbx:
+    +materialized: table

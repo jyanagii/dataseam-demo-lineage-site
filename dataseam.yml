@@ -1,0 +1,76 @@
+site:
+  title: Acme Books Demo Lineage
+  output: ./site
+  default_theme: auto
+  agent_context: true
+
+sql_dialect: bigquery
+
+warehouse:
+  platform: bigquery
+  lowercase_ids: true
+  job_history:
+    enabled: false
+
+column_lineage:
+  enabled: true
+  cache_dir: ./.dataseam-cache
+
+impact:
+  enabled: true
+  fail_on: breaking
+  comment:
+    detail: names
+
+dbt_projects:
+  - name: acme_core
+    repo_url: https://github.com/jyanagii/dataseam-demo-dbt-core
+    branch: main
+    artifacts:
+      source: github_actions
+      project: jyanagii/dataseam-demo-dbt-core
+      artifact_name: dbt-artifacts
+      profile_overrides:
+        database: acme-analytics-prod
+        schema: core
+
+  - name: acme_mart
+    repo_url: https://github.com/jyanagii/dataseam-demo-dbt-mart
+    branch: main
+    artifacts:
+      source: github_actions
+      project: jyanagii/dataseam-demo-dbt-mart
+      artifact_name: dbt-artifacts
+      profile_overrides:
+        database: acme-analytics-prod
+        schema: mart
+
+airflow:
+  - name: pipelines
+    repo_url: https://github.com/jyanagii/dataseam-demo-bi-airflow
+    branch: main
+    path: ./repos/bi-airflow
+    dag_globs: ["dags/**/*.py"]
+    default_database: acme-analytics-prod
+    extractors:
+      - type: bigquery_operators
+      - type: sql_operators
+
+looker:
+  - name: acme_retail
+    repo_url: https://github.com/jyanagii/dataseam-demo-bi-airflow
+    branch: main
+    path: ./repos/bi-airflow/looker
+    database_map:
+      bq_analytics: acme-analytics-prod
+
+metabase:
+  export_dir: ./repos/bi-airflow/metabase-export
+  database_map:
+    "Analytics (prod)": acme-analytics-prod
+
+tableau:
+  files:
+    - ./repos/bi-airflow/tableau/**/*.twb
+  database_map:
+    acme-analytics-prod: acme-analytics-prod

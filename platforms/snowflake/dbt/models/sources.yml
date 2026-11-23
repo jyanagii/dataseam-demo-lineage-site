@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: raw
+    database: ACME_PROD
+    schema: RAW
+    tables:
+      - name: ORDERS
+        columns:
+          - name: ORDER_ID
+          - name: ORDER_DATE
+          - name: AMOUNT

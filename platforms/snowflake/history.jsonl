@@ -1,0 +1,1 @@
+{"QUERY_START_TIME": "2026-11-22T10:05:00Z", "DIRECT_OBJECTS_ACCESSED": [{"objectDomain": "Table", "objectName": "ACME_PROD.MART.EXEC_SUMMARY"}], "OBJECTS_MODIFIED": [{"objectDomain": "Table", "objectName": "ACME_PROD.MART.FINANCE_ARCHIVE"}]}
