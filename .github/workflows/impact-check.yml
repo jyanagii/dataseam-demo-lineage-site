@@ -35,6 +35,8 @@ permissions:
 concurrency:
   group: dataseam-impact-${{ inputs.source_repo }}-${{ inputs.pr_number }}
   cancel-in-progress: true
+env:
+  DATASEAM_INSTALL_TOKEN: ${{ secrets.READ_REPOS_TOKEN }}
 jobs:
   impact:
     runs-on: ubuntu-latest
@@ -47,6 +49,9 @@ jobs:
         python-version: '3.12'
     - name: Install DataSeam
       run: |
+        if [ -n "${DATASEAM_INSTALL_TOKEN:-}" ]; then
+          git config --global url."https://x-access-token:${DATASEAM_INSTALL_TOKEN}@github.com/jyanagii/dataseam".insteadOf "https://github.com/jyanagii/dataseam"
+        fi
         python -m pip install 'dataseam @ git+https://github.com/jyanagii/dataseam.git@8b58901d408be32d5d55fc55914a119e163c2afe'
     - name: Check out the trusted source repositories
       env:

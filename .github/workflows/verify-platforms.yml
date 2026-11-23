@@ -5,6 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  DATASEAM_INSTALL_TOKEN: ${{ secrets.READ_REPOS_TOKEN }}
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -29,6 +31,9 @@ jobs:
       - name: Install DataSeam and dbt adapter
         run: |
           python -m pip install --upgrade pip
+          if [ -n "${DATASEAM_INSTALL_TOKEN:-}" ]; then
+            git config --global url."https://x-access-token:${DATASEAM_INSTALL_TOKEN}@github.com/jyanagii/dataseam".insteadOf "https://github.com/jyanagii/dataseam"
+          fi
           python -m pip install "dataseam @ git+https://github.com/jyanagii/dataseam@8b58901d408be32d5d55fc55914a119e163c2afe"
           python -m pip install "dbt-core~=1.10.0" "${{ matrix.adapter }}"
       - name: Offline dbt compile

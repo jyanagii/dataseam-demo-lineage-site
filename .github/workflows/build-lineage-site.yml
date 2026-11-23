@@ -19,6 +19,8 @@ permissions:
 concurrency:
   group: dataseam-pages
   cancel-in-progress: true
+env:
+  DATASEAM_INSTALL_TOKEN: ${{ secrets.READ_REPOS_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -75,6 +77,9 @@ jobs:
           fi
         }
         checkout_repo https://github.com/jyanagii/dataseam-demo-bi-airflow main repos/bi-airflow github
+        if [ -n "${DATASEAM_INSTALL_TOKEN:-}" ]; then
+          git config --global url."https://x-access-token:${DATASEAM_INSTALL_TOKEN}@github.com/jyanagii/dataseam".insteadOf "https://github.com/jyanagii/dataseam"
+        fi
         python -m pip install 'dataseam @ git+https://github.com/jyanagii/dataseam.git@8b58901d408be32d5d55fc55914a119e163c2afe'
         dataseam build --strict -c dataseam.yml --output public
       env:
